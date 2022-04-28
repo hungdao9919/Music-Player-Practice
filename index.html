@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="./assets/icon/Benjigarner-Softdimension-Windows-media-player.ico" type="image/x-icon">
+
+    <title>Music Player Practice</title>
+    <style>
+        @media (max-width:739px){
+            .player{
+                min-width: 100%;
+                max-width: 700px;
+            }
+            .dashboard{
+                min-width: 100%;
+                max-width: 700px;
+            }
+            .playlist{
+                min-width: 100%;
+                max-width: 700px;
+            }
+        }
+        @media (min-width:740px) and (max-width:1023px){
+            .player{
+                max-width: 720px;
+                min-width: 80%;
+                
+            
+            }
+            .dashboard{
+                min-width: 80%;
+                /* min-width: 100%; */
+            }
+            .playlist{
+                min-width: 80%;
+                /* min-width: 100%; */
+            }
+        }
+        @media (min-width:1024px){
+            .player{
+                max-width: 720px;
+                min-width: 480px;
+            
+            }
+            .dashboard{
+                max-width: 720px;
+                min-width: 480px;
+
+            }
+            .playlist{
+                max-width: 720px;
+
+                min-width: 480px;
+
+            }
+
+        }
+
+        :root{
+            --primary-color:#ec1f55;
+            --text-color: #333;
+        }
+        body{
+            font-family: "Poppins", sans-serif;
+            display: flex;
+            justify-content: center;
+            background-color: rgb(247, 247, 247);
+        }
+        *{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        .player{
+
+            background-color: white;
+
+        }
+        .player.playing .icon-pause{
+            display: block;
+        }
+        .player.playing .icon-play{
+            display: none;
+        }
+        .player .icon-pause{
+            display: none;
+        }
+        .dashboard{
+            box-shadow:  2px 4px 9px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            background-color: #fff;
+
+
+        }
+        .dashboard-heading h4{
+            font-size: 12px;
+            color: var(--primary-color);
+        }
+        .dashboard-heading h2{
+            color: var(--text-color);
+            font-size: 20px;
+        }
+        .dashboard-heading{
+            text-align: center;
+        }
+        .dashboard-cd{
+            width: 200px;
+            margin: 16px auto;
+            /* transition: all ease .2s; */
+            
+           
+        }
+        .dashboard-cd .cd-thumb{
+            border-radius: 50%;
+            padding-top: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            transition: all ease ;
+        }
+        .dashboard-controller{
+            color: var(--text-color);
+            display: flex;
+            justify-content: space-around;
+            margin: 10px 0;
+            align-items: center;
+        }
+        .dashboard-controller .btn{
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .dashboard-controller .btn.active{
+            color: var(--primary-color);
+        }
+        .dashboard-controller .play-btn{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            font-size: 24px;
+            color: white;
+        }
+       
+        .dashboard .processBar{
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: #d3d3d3;
+            transition: ease all .2s;
+
+        
+        }
+        .dashboard .processBar::-webkit-slider-thumb {
+            -webkit-appearance: none; /* Override default look */
+            appearance: none;
+            width: 8px; /* Set a specific slider handle width */
+            height: 12px; /* Slider handle height */
+            background: var(--primary-color); /* Green background */
+            cursor: pointer; /* Cursor on hover */
+        }
+        .dashboard .processBar:hover{
+            height: 12px;
+        }
+        .playlist{
+            margin-top: 10px;
+            position: absolute;
+            top: 400px;
+        }
+        .playlist .song .song-thumb{
+            width: 46px;
+            height: 46px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            border-radius: 50%;  
+            border: rgba(0, 0, 0, 0.2) solid 1px;
+
+
+        }
+        .playlist .song{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px ;
+            box-shadow:  2px 4px 9px rgba(0, 0, 0, 0.2);
+            padding: 12px 16px;
+            background-color: #fff;
+            cursor: pointer;
+
+        }
+        .playlist .song.active{
+            background-color: var(--primary-color);
+            
+        }
+        .playlist .song.active .song-title,
+        .playlist .song.active .song-author{
+            color: white;
+        }
+        .playlist .song .song-body{
+            flex: 1;
+            margin-left: 16px;
+        }
+        .playlist .song-title{
+            display: -webkit-box;
+            color: var(--text-color);
+            font-size: 18px;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .playlist .song-author{
+            display: -webkit-box;
+            font-size: 12px;
+            color: #999;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+
+        }
+        .playlist .song .options{
+            padding: 6px;
+            color: var(--text-color);
+        }
+
+
+    
+
+    </style>
+</head>
+<body>
+<div class="player">
+    <div class="dashboard">
+        <!-- Heading playing -->
+        <div class="dashboard-heading">
+            <h4>Now Playing</h4>
+            <h2>Như ngày hôm qua</h2>
+
+        </div>
+        <!-- CD thumb image -->
+        <div class="dashboard-cd">
+            <div class="cd-thumb" style="background-image: url(./assets/img/song1.jpg)";></div>
+        </div>
+
+        <!-- Controller -->
+        <div class="dashboard-controller">
+            <div class="repeat-btn btn">
+                <i class="fa-solid fa-arrow-rotate-right"></i>
+            </div>
+            <div class="backward-btn btn">
+                <i class="fa-solid fa-backward-step"></i>
+            </div>
+            <div class="play-btn btn">
+                <i class="fa-solid fa-play icon-play"></i>
+                <i class="fa-solid fa-pause icon-pause"></i>
+            </div>
+            <div class="next-btn btn">
+                <i class="fa-solid fa-forward-step"></i>
+            </div>
+            <div class="random-btn btn">
+                <i class="fa-solid fa-shuffle"></i>
+            </div>
+
+        </div>
+        <input type="range" name="processBar" id="processBar" class="processBar" min="0" max="100" step="1" value="0">
+        <audio id="audio" src=""></audio>
+        
+    </div>
+
+    <div class="playlist">
+        
+    
+    </div>
+
+
+</div>
+
+
+
+
+<script>
+    const $ = document.querySelector.bind(document)
+    const $$ = document.querySelectorAll.bind(document)
+    
+    const musicPlayerKey = 'Music-player'
+    const cdThum = $('.cd-thumb')
+    const dashboadHeading = $('.dashboard-heading h2')
+    const audio =$('#audio')
+    const playList = $('.playlist')
+    const dashboardCd = $('.dashboard-cd')
+    const playBtn = $('.play-btn') 
+    const player = $('.player') 
+    const processBar = $('#processBar') 
+    const backwardBtn = $('.backward-btn') 
+    const nextBtn = $('.next-btn')
+    const randomBtn = $('.random-btn')
+    const repeatBtn = $('.repeat-btn') 
+    
+    // const isPlaying = false
+    // const isRepeat = false
+    // const isRandom = false
+
+
+    const app = {
+
+        currentIndex: 0,
+        songs: [
+            {
+                name: 'Như ngày hôm qua',
+                singer:'Sơn Tùng MTP',
+                path:'./assets/music/song1.mp3',
+                image:'./assets/img/song1.jpg'
+
+            },
+            {
+                name: 'Tát nước đầu đình',
+                singer:'Link Lee ft Binz',
+                path:'./assets/music/song2.mp3',
+                image:'./assets/img/song2.jpg'
+
+            },
+            {
+                name: 'Panama',
+                singer:'Matteo',
+                path:'./assets/music/song3.mp3',
+                image:'./assets/img/song3.jpg'
+
+            },
+            {
+                name: 'Havana',
+                singer:'Camila Cabello',
+                path:'./assets/music/song4.mp3',
+                image:'./assets/img/song4.jpg'
+
+            },
+            {
+                name: 'Perfect',
+                singer:'Ed Sheeran',
+                path:'./assets/music/song5.mp3',
+                image:'./assets/img/song5.jpg'
+
+            },
+            {
+                name: 'Masked Heroes',
+                singer:'Vexento',
+                path:'./assets/music/song6.mp3',
+                image:'./assets/img/song6.jpg'
+
+            },
+
+            {
+                name: 'Nocturnal',
+                singer:'Shaun',
+                path:'./assets/music/song7.mp3',
+                image:'./assets/img/song7.jpg'
+
+            },
+            {
+                name: 'Reality',
+                singer:'Lost Frequencies',
+                path:'./assets/music/song8.mp3',
+                image:'./assets/img/song8.jpg'
+
+            },
+            {
+                name: 'Gác lại âu lo',
+                singer:'Miu Lê',
+                path:'./assets/music/song9.mp3',
+                image:'./assets/img/song9.jpg'
+
+            },
+            {
+                name: 'Hello Việt Nam',
+                singer:'Quỳnh Anh',
+                path:'./assets/music/song10.mp3',
+                image:'./assets/img/song10.jpg'
+
+            },
+            {
+                name: 'Wellerman',
+                singer:'Nathan Evanas',
+                path:'./assets/music/song11.mp3',
+                image:'./assets/img/song11.jpg'
+
+            },
+            {
+                name: 'Ta đã thấy gì trong đêm nay',
+                singer:'Huyền Trang',
+                path:'./assets/music/song12.mp3',
+                image:'./assets/img/song12.jpg'
+
+            },
+            {
+                name: 'Đi tìm tình yêu',
+                singer:'Ôn Vĩnh Quang',
+                path:'./assets/music/song13.mp3',
+                image:'./assets/img/song13.jpg'
+
+            },
+            {
+                name: 'Red right hand',
+                singer:'Nick Cave',
+                path:'./assets/music/song14.mp3',
+                image:'./assets/img/song14.jpg'
+
+            },
+            {
+                name: 'See Tình',
+                singer:'Hoàng Thùy Linh',
+                path:'./assets/music/song15.mp3',
+                image:'./assets/img/song15.jpg'
+
+            },
+            {
+                name: 'Hẹn ước từ hư vô (Live)',
+                singer:'Mỹ Tâm',
+                path:'./assets/music/song16.mp3',
+                image:'./assets/img/song16.jpg'
+
+            },
+        ],
+        configs: JSON.parse(localStorage.getItem(musicPlayerKey)) ||{},
+        
+        
+        handleEvents:function(){
+            const _this = this
+            const cdWidth = dashboardCd.offsetWidth
+            
+            //Xử lý quay CD
+            const cdThumbAnimate = cdThum.animate([{transform: 'rotate(360deg)'}],{duration:20000, iterations:Infinity})
+            cdThumbAnimate.pause()
+
+            //xử lý thu nhỏ phóng to CD thumb
+            document.onscroll = function(){ 
+               const scrollTop = document.documentElement.scrollTop ||window.scrollY 
+               const newCdWidth = cdWidth- scrollTop 
+               dashboardCd.style.width = newCdWidth > 0 ? newCdWidth + 'px': 0;
+               dashboardCd.style.opacity = newCdWidth/cdWidth  
+            }
+
+            //Xử lý nút play/pause
+            playBtn.onclick = function(){
+           
+              if(_this.isPlaying){
+                  audio.pause()
+              }
+              else{
+                  audio.play()
+              }
+
+            }
+            //Khi audio play
+            audio.onplay = function(){ 
+                player.classList.add('playing')
+                _this.isPlaying = true
+                cdThumbAnimate.play()
+            }
+
+            //khi audio pause
+            audio.onpause = function(){
+                player.classList.remove('playing')
+                _this.isPlaying = false 
+                cdThumbAnimate.pause()
+
+            }
+
+            //Xử lý range khi audio play
+            audio.ontimeupdate = function(){ 
+                if(audio.duration){
+                    processBar.value = (Math.floor((audio.currentTime/audio.duration) *100 ) ) 
+                }
+            }
+
+            //Xử lý khi audio ended
+            audio.onended =function(){
+                if(_this.isRepeat){
+                    audio.play();
+                }
+                else{
+                    nextBtn.click()
+                }
+                
+            }
+            //Xử lý onchange range input
+            processBar.onchange  = function(){
+                audio.currentTime = (processBar.value/100) * audio.duration
+            }
+
+            //Xử lý nút lùi bài
+            backwardBtn.onclick = function(){
+                if(_this.isRandom){
+                    _this.playRandomSong()
+                }
+                else{
+                    _this.loadPreviousSong()
+                }
+                audio.play()
+                _this.render()
+                _this.scrollIntoActiveSong()               
+            }
+
+            //Xử lý next bài
+            nextBtn.onclick = function(){
+                if(_this.isRandom){
+                    _this.playRandomSong()
+                }
+                else{
+                    _this.loadNextSong()
+                }
+                audio.play();
+                _this.render()
+                _this.scrollIntoActiveSong()
+
+            }
+
+            //Xử lý random bài hát
+            randomBtn.onclick = function(){
+                _this.isRandom =!_this.isRandom
+                randomBtn.classList.toggle('active')
+                _this.setConfigs('isRandom',_this.isRandom)
+
+            }
+
+            //Xử lý lặp bài hát
+            repeatBtn.onclick = function(){       
+                _this.isRepeat = !_this.isRepeat 
+                repeatBtn.classList.toggle('active')
+                _this.setConfigs('isRepeat',_this.isRepeat)
+
+
+            }
+
+            //Xử lý click vào bài hát (không tính click options)
+            playList.onclick = function(e){
+                const songElements = e.target.closest('.song:not(.active)')
+                const options = e.target.closest('.options')
+                if(songElements && !options){
+                    _this.currentIndex = Number(songElements.dataset.index)
+                    _this.loadCurrentSong()
+                     audio.play()
+                     _this.render()
+                    
+                    } 
+            }       
+        },
+
+        //Hiển thị danh sách bài hát vào giao diện playlist
+        render:function(){
+            var htmls = this.songs.map((song, index) =>{ 
+                return `<div class="song ${this.currentIndex === index ? 'active' :''} " data-index = ${index}>
+                            <div class="song-thumb" style="background-image: url(${song.image});"></div>
+                            <div class="song-body">
+                                <h3 class="song-title">${song.name}</h3>
+                                <p class="song-author">${song.singer}</p>
+                            </div>
+                            <i class="fa-solid fa-ellipsis options"></i>
+                        </div>`
+            })
+            playList.innerHTML = htmls.join('')
+        },
+
+        //Lấy ra bài hát đang phát hiện tại
+        getCurrentSong:function(){
+           return this.songs[this.currentIndex]
+        },
+
+        //Lấy ra bài hát đang phát hiện tại ra giao diện dashboard CD
+        loadCurrentSong:function(){
+            dashboadHeading.textContent = this.getCurrentSong().name;
+            cdThum.style.backgroundImage  = `url(${this.getCurrentSong().image})`
+            audio.src = this.getCurrentSong().path ;
+        },
+
+        //Load bài hát trước
+        loadPreviousSong:function(){
+            this.currentIndex--
+                if(this.currentIndex < 0){
+                    this.currentIndex = this.songs.length -1 
+                }
+                this.loadCurrentSong()
+        },
+
+        //Load bài hát tiếp theo
+        loadNextSong:function(){
+            this.currentIndex++
+                if(this.currentIndex > this.songs.length -1){
+                    this.currentIndex =0
+                }
+                this.loadCurrentSong()
+        },
+
+        //Load bài hát ngẫu nhiên
+        playRandomSong:function(){
+            var newIndex
+            do{
+                newIndex = Math.floor(Math.random()*(this.songs.length)) 
+            }
+            while(newIndex == this.currentIndex)
+            this.currentIndex = newIndex
+            this.loadCurrentSong() 
+        },
+
+        //Hiển thị lên giao diện bài hát đang phát cho người dùng thấy
+        scrollIntoActiveSong:function(){
+            setTimeout(() => {
+                $('.song.active').scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"}); 
+            }, 500);
+        },
+
+        //Set config từ giao diện qua local storage
+        setConfigs:function(key,value){
+            //gán key và giá trị cho object config
+            this.configs[key] = value
+
+            //Lưu configs vào local storage
+            localStorage.setItem(musicPlayerKey,JSON.stringify(this.configs))
+        },
+
+        loadConfigs:function(){
+            this.isRandom = this.configs.isRandom
+            this.isRepeat = this.configs.isRepeat
+        },
+        
+        
+      
+
+        //Hàm start ứng dụng
+        start:function(){
+            //Load configs từ object config
+            this.loadConfigs()
+
+            //Load bài hát đầu tiên
+            this.loadCurrentSong();
+            
+
+            //Xử lý các sự kiện
+            this.handleEvents()
+
+            //render các bài hát vào playlist
+            this.render()
+
+            //Hiển thị config ra giao diện
+            randomBtn.classList.toggle('active',this.isRandom)
+            repeatBtn.classList.toggle('active',this.isRepeat)
+ 
+
+        }
+            
+    }
+    app.start()
+
+
+
+</script>    
+</body>
+</html>
